@@ -1,0 +1,278 @@
+//stack using array
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int top=-1;
+int n;
+int stack[1000];
+
+int isfull();
+int isempty();
+void push();
+void pop();
+void peek();
+void print();
+
+void main()
+{
+    int choice=0;
+    printf("ENTER NO. OF ELEMENTS");
+    scanf("%d",&n);
+    while(choice!=5)
+    {
+        printf("ENTER THE CHOICE");
+        scanf("%d",&choice);
+        switch(choice)
+        {
+            case 1:
+              push();
+              break;
+            case 2:
+              pop();
+              break;
+            case 3:
+              peek();
+              break;
+            case 4:
+              print();
+              break;
+            case 5:
+              exit(0);
+              break;
+        }
+    }
+}
+
+int isfull()
+{
+    if(top==n-1)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int isempty()
+{
+    if(top==-1)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+void push()
+{
+    int x;
+    if(isfull())
+    {
+        printf("OVERFLOW");
+    }
+    else
+    {
+        top++;
+        printf("ENTER THE DATA");
+        scanf("%d",&x);
+        stack[top]=x;
+         
+    }
+}
+
+void pop()
+{
+    int x;
+    if (isempty())
+    {
+        printf("UNDERFLOW/EMPTY LIST");
+    }
+    else
+    {
+        x=stack[top];
+        top--;
+        printf("%d",x);
+    }
+}
+
+void peek()
+{
+    printf("THE TOP ELEMENT");
+    printf("%d",stack[top]);
+   
+}
+
+void print()
+{
+    int i;
+    if (isempty())
+    {
+        printf("UNDERFLOW");
+    }
+    else
+    {
+        printf("PRINT THE ELEMENTS ");
+        for(i=top;i>=0;i--)
+        {
+            printf("%d ",stack[i]);
+        }
+    }
+}
+
+
+
+
+// stack using linked list
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node
+{
+    int data;
+    struct node *next;
+};
+
+struct node *top=NULL;
+
+int isempty();
+void push();
+void pop();
+void peek();
+void print();
+void size();
+
+void main()
+{
+    int choice=0;
+    while(choice!=6)
+    {
+        printf("ENTER THE CHOICE");
+        scanf("%d",&choice);
+        switch(choice)
+        {
+            case 1:
+              push();
+              break;
+            case 2:
+              pop();
+              break;
+            case 3:
+              peek();
+              break;
+            case 4:
+              print();
+              break;
+            case 5:
+              size();
+              break;
+            case 6:
+              exit(0);
+              break;
+        }
+    }
+}
+
+int isempty()
+{
+    if(top==NULL)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+void push()
+{
+    struct node *newnode;
+    newnode=(struct node *)malloc(sizeof(struct node));
+   
+    if(newnode==NULL)
+    {
+        printf("OVERFLOW");
+    }
+    else
+    {
+        scanf("%d",&newnode->data);
+        if (isempty())
+        {
+           newnode->next=NULL;
+           top=newnode;
+        }
+        else
+        {
+            newnode->next=top;
+            top=newnode;
+        }
+    }
+
+}
+
+void pop()
+{
+    struct node *temp;
+   
+    if (top==NULL)
+    {
+        printf("UNDEFLOW");
+    }
+    else
+    {
+        temp=top;
+        printf("%d",temp->data);
+        top=top->next;
+       
+        free(temp);
+    }
+}
+
+void peek()
+{
+    printf("%d",top->data);
+}
+
+void size()
+{
+    struct node *temp;
+    int count=0;
+     if(top==NULL)
+    {
+        printf("UNDERFLOW");
+    }
+    else
+    {
+        temp=top;
+        while(temp!=NULL)
+        {
+            count++;
+            temp=temp->next;
+        }
+        printf("%d",count);
+    }  
+}
+void print()
+{
+    struct node *temp;
+    if(top==NULL)
+    {
+        printf("UNDERFLOW");
+    }
+    else
+    {
+        temp=top;
+        while(temp!=NULL)
+        {
+            printf("%d ",temp->data);
+            temp=temp->next;
+        }
+    }
+}
