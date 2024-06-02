@@ -1,0 +1,235 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure to represent a node in the linked list
+typedef struct Node {
+    int coeff;
+    int exp;
+    struct Node* next;
+} Node;
+
+// Function to add two polynomials
+Node* addPolynomials(Node* poly1, Node* poly2) {
+    Node* result = NULL;
+    Node* temp, *prev = NULL;
+
+    while (poly1 != NULL && poly2 != NULL) {
+        temp = (Node*)malloc(sizeof(Node));
+        temp->next = NULL;
+
+        if (poly1->exp > poly2->exp) {
+            temp->coeff = poly1->coeff;
+            temp->exp = poly1->exp;
+            poly1 = poly1->next;
+        } else if (poly1->exp < poly2->exp) {
+            temp->coeff = poly2->coeff;
+            temp->exp = poly2->exp;
+            poly2 = poly2->next;
+        } else {
+            temp->coeff = poly1->coeff + poly2->coeff;
+            temp->exp = poly1->exp;
+            poly1 = poly1->next;
+            poly2 = poly2->next;
+        }
+
+        if (result == NULL) {
+            result = temp;
+        } else {
+            prev->next = temp;
+        }
+        prev = temp;
+    }
+
+    while (poly1 != NULL) {
+        temp = (Node*)malloc(sizeof(Node));
+        temp->coeff = poly1->coeff;
+        temp->exp = poly1->exp;
+        temp->next = NULL;
+        prev->next = temp;
+        prev = temp;
+        poly1 = poly1->next;
+    }
+
+    while (poly2 != NULL) {
+        temp = (Node*)malloc(sizeof(Node));
+        temp->coeff = -poly2->coeff;
+        temp->exp = poly2->exp;
+        temp->next = NULL;
+        prev->next = temp;
+        prev = temp;
+        poly2 = poly2->next;
+    }
+
+    return result;
+}
+
+// Function to subtract two polynomials
+Node* subtractPolynomials(Node* poly1, Node* poly2) {
+    Node* result = NULL;
+    Node* temp, *prev = NULL;
+
+    while (poly1 != NULL && poly2 != NULL) {
+        temp = (Node*)malloc(sizeof(Node));
+        temp->next = NULL;
+
+        if (poly1->exp > poly2->exp) {
+            temp->coeff = poly1->coeff;
+            temp->exp = poly1->exp;
+            poly1 = poly1->next;
+        } else if (poly1->exp < poly2->exp) {
+            temp->coeff = -poly2->coeff;
+            temp->exp = poly2->exp;
+            poly2 = poly2->next;
+        } else {
+            temp->coeff = poly1->coeff - poly2->coeff;
+            temp->exp = poly1->exp;
+            poly1 = poly1->next;
+            poly2 = poly2->next;
+        }
+
+        if (result == NULL) {
+            result = temp;
+        } else {
+            prev->next = temp;
+        }
+        prev = temp;
+    }
+
+    while (poly1 != NULL) {
+        temp = (Node*)malloc(sizeof(Node));
+        temp->coeff = poly1->coeff;
+        temp->exp = poly1->exp;
+        temp->next = NULL;
+        prev->next = temp;
+        prev = temp;
+        poly1 = poly1->next;
+    }
+
+    while (poly2 != NULL) {
+        temp = (Node*)malloc(sizeof(Node));
+        temp->coeff = -poly2->coeff;
+        temp->exp = poly2->exp;
+        temp->next = NULL;
+        prev->next = temp;
+        prev = temp;
+        poly2 = poly2->next;
+    }
+
+    return result;
+}
+
+// Function to multiply two polynomials
+Node* multiplyPolynomials(Node* poly1, Node* poly2) {
+    Node* result = NULL;
+    Node* temp, *prev = NULL;
+    Node* p1 = poly1;
+
+    while (p1 != NULL) {
+        Node* p2 = poly2;
+        while (p2 != NULL) {
+            temp = (Node*)malloc(sizeof(Node));
+            temp->coeff = p1->coeff * p2->coeff;
+            temp->exp = p1->exp + p2->exp;
+            temp->next = NULL;
+
+            if (result == NULL) {
+                result = temp;
+            } else {
+                Node* ptr = result;
+                Node* prevMul = NULL;
+                while (ptr != NULL && ptr->exp > temp->exp) {
+                    prevMul = ptr;
+                    ptr = ptr->next;
+                }
+                if (ptr != NULL && ptr->exp == temp->exp) {
+                    ptr->coeff += temp->coeff;
+                    free(temp);
+                } else {
+                    if (prevMul == NULL) {
+                        temp->next = result;
+                        result = temp;
+                    } else {
+                        temp->next = prevMul->next;
+                        prevMul->next = temp;
+                    }
+                }
+            }
+            p2 = p2->next;
+        }
+        p1 = p1->next;
+    }
+
+    return result;
+}
+
+// Function to print a polynomial
+void printPolynomial(Node* poly) {
+    while (poly != NULL) {
+        printf("%dx^%d", poly->coeff, poly->exp);
+        if (poly->next != NULL) {
+            printf(" + ");
+        }
+        poly = poly->next;
+    }
+    printf("\n");
+}
+
+int main() {
+    // Create the first polynomial
+    Node* poly1 = (Node*)malloc(sizeof(Node));
+    poly1->coeff = 2;
+    poly1->exp = 3;
+    poly1->next = (Node*)malloc(sizeof(Node));
+    poly1->next->coeff = 1;
+    poly1->next->exp = 2;
+    poly1->next->next = (Node*)malloc(sizeof(Node));
+    poly1->next->next->coeff = 3;
+    poly1->next->next->exp = 1;
+    poly1->next->next->next = NULL;
+
+    // Create the second polynomial
+    Node* poly2 = (Node*)malloc(sizeof(Node));
+    poly2->coeff = 1;
+    poly2->exp = 2;
+    poly2->next = (Node*)malloc(sizeof(Node));
+    poly2->next->coeff = 2;
+    poly2->next->exp = 1;
+    poly2->next->next = (Node*)malloc(sizeof(Node));
+    poly2->next->next->coeff = 1;
+    poly2->next->next->exp = 0;
+    poly2->next->next->next = NULL;
+
+    // Add the polynomials
+    Node* sum = addPolynomials(poly1, poly2);
+    printf("Sum: ");
+    printPolynomial(sum);
+
+    // Subtract the polynomials
+    Node* diff = subtractPolynomials(poly1, poly2);
+    printf("Difference: ");
+    printPolynomial(diff);
+
+    // Multiply the polynomials
+    Node* prod = multiplyPolynomials(poly1, poly2);
+    printf("Product: ");
+    printPolynomial(prod);
+
+    // Free the memory
+    while (sum != NULL) {
+        Node* temp = sum;
+        sum = sum->next;
+        free(temp);
+    }
+    while (diff != NULL) {
+        Node* temp = diff;
+        diff = diff->next;
+        free(temp);
+    }
+    while (prod != NULL) {
+        Node* temp = prod;
+        prod = prod->next;
+        free(temp);
+    }
+
+    return 0;
+}
