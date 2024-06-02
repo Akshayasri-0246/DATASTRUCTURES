@@ -1,0 +1,121 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the structure for a binary tree node
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+// Function for inorder traversal
+void inorder(Node* root) {
+    if (root != NULL) {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
+    }
+}
+
+// Function for preorder traversal
+void preorder(Node* root) {
+    if (root != NULL) {
+        printf("%d ", root->data);
+        preorder(root->left);
+        preorder(root->right);
+    }
+}
+
+// Function for postorder traversal
+void postorder(Node* root) {
+    if (root != NULL) {
+        postorder(root->left);
+        postorder(root->right);
+        printf("%d ", root->data);
+    }
+}
+
+int main() {
+    // Create a binary tree
+    Node* root = NULL;
+
+    // Ask the user for the number of nodes
+    int numNodes;
+    printf("Enter the number of nodes: ");
+    scanf("%d", &numNodes);
+
+    // Create the binary tree nodes
+    for (int i = 0; i < numNodes; i++) {
+        Node* newNode = (Node*)malloc(sizeof(Node));
+        printf("Enter the data for node %d: ", i + 1);
+        scanf("%d", &newNode->data);
+
+        // Ask the user for the left and right child nodes
+        printf("Enter the left child node for node %d (0 for no child): ", i + 1);
+        int leftChild;
+        scanf("%d", &leftChild);
+        if (leftChild != 0) {
+            newNode->left = (Node*)malloc(sizeof(Node));
+            newNode->left->data = leftChild;
+        } else {
+            newNode->left = NULL;
+        }
+
+        printf("Enter the right child node for node %d (0 for no child): ", i + 1);
+        int rightChild;
+        scanf("%d", &rightChild);
+        if (rightChild != 0) {
+            newNode->right = (Node*)malloc(sizeof(Node));
+            newNode->right->data = rightChild;
+        } else {
+            newNode->right = NULL;
+        }
+
+        // Add the new node to the binary tree
+        if (root == NULL) {
+            root = newNode;
+        } else {
+            Node* current = root;
+            while (1) {
+                printf("Enter the direction to go (L for left, R for right, or E to exit): ");
+                char direction;
+                scanf(" %c", &direction);
+
+                if (direction == 'L') {
+                    if (current->left == NULL) {
+                        current->left = newNode;
+                        break;
+                    } else {
+                        current = current->left;
+                    }
+                } else if (direction == 'R') {
+                    if (current->right == NULL) {
+                        current->right = newNode;
+                        break;
+                    } else {
+                        current = current->right;
+                    }
+                } else if (direction == 'E') {
+                    break;
+                }
+            }
+        }
+    }
+
+    // Perform inorder traversal
+    printf("Inorder traversal: ");
+    inorder(root);
+    printf("\n");
+
+    // Perform preorder traversal
+    printf("Preorder traversal: ");
+    preorder(root);
+    printf("\n");
+
+    // Perform postorder traversal
+    printf("Postorder traversal: ");
+    postorder(root);
+    printf("\n");
+
+    return 0;
+}
