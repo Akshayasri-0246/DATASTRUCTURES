@@ -1,0 +1,127 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define TABLE_SIZE 10
+
+// Open Addressing
+int openAddressingHashTable[TABLE_SIZE] = {0};
+
+void openAddressingInsert(int key) {
+    int index = key % TABLE_SIZE;
+    while (openAddressingHashTable[index] != 0) {
+        index = (index + 1) % TABLE_SIZE;
+    }
+    openAddressingHashTable[index] = key;
+}
+
+int openAddressingSearch(int key) {
+    int index = key % TABLE_SIZE;
+    while (openAddressingHashTable[index] != 0) {
+        if (openAddressingHashTable[index] == key) {
+            return 1; // Key found
+        }
+        index = (index + 1) % TABLE_SIZE;
+    }
+    return 0; // Key not found
+}
+
+// Closed Addressing
+int closedAddressingHashTable[TABLE_SIZE] = {0};
+
+void closedAddressingInsert(int key) {
+    int index = key % TABLE_SIZE;
+    while (closedAddressingHashTable[index] != 0) {
+        index = (index + 1) % TABLE_SIZE;
+    }
+    closedAddressingHashTable[index] = key;
+}
+
+int closedAddressingSearch(int key) {
+    int index = key % TABLE_SIZE;
+    while (closedAddressingHashTable[index] != 0) {
+        if (closedAddressingHashTable[index] == key) {
+            return 1; // Key found
+        }
+        index = (index + 1) % TABLE_SIZE;
+    }
+    return 0; // Key not found
+}
+
+// Rehashing
+int rehashingHashTable[TABLE_SIZE] = {0};
+
+void rehashingInsert(int key) {
+    int index = key % TABLE_SIZE;
+    while (rehashingHashTable[index] != 0) {
+        index = (index + 1) % TABLE_SIZE;
+    }
+    rehashingHashTable[index] = key;
+}
+
+int rehashingSearch(int key) {
+    int index = key % TABLE_SIZE;
+    while (rehashingHashTable[index] != 0) {
+        if (rehashingHashTable[index] == key) {
+            return 1; // Key found
+        }
+        index = (index + 1) % TABLE_SIZE;
+    }
+    return 0; // Key not found
+}
+
+int main() {
+    int n, choice, key;
+
+    printf("Enter the number of elements: ");
+    scanf("%d", &n);
+
+    // Open Addressing
+    printf("\nOpen Addressing:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Enter element %d: ", i + 1);
+        scanf("%d", &key);
+        openAddressingInsert(key);
+    }
+
+    printf("Enter the key to search: ");
+    scanf("%d", &key);
+    if (openAddressingSearch(key)) {
+        printf("Key found in the open addressing hash table.\n");
+    } else {
+        printf("Key not found in the open addressing hash table.\n");
+    }
+
+    // Closed Addressing
+    printf("\nClosed Addressing:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Enter element %d: ", i + 1);
+        scanf("%d", &key);
+        closedAddressingInsert(key);
+    }
+
+    printf("Enter the key to search: ");
+    scanf("%d", &key);
+    if (closedAddressingSearch(key)) {
+        printf("Key found in the closed addressing hash table.\n");
+    } else {
+        printf("Key not found in the closed addressing hash table.\n");
+    }
+
+    // Rehashing
+    printf("\nRehashing:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Enter element %d: ", i + 1);
+        scanf("%d", &key);
+        rehashingInsert(key);
+    }
+
+    printf("Enter the key to search: ");
+    scanf("%d", &key);
+    if (rehashingSearch(key)) {
+        printf("Key found in the rehashing hash table.\n");
+    } else {
+        printf("Key not found in the rehashing hash table.\n");
+    }
+
+    return 0;
+}
