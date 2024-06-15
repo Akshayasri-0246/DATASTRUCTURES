@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define INF 9999999
+#define V 100
+
+int G[V][V]; // adjacency matrix
+int no_edge; // number of edge
+bool selected[V]; // create a array to track selected vertex
+
+int main() {
+    int vertices, edges;
+
+    // Input the number of vertices
+    printf("Input the number of vertices: ");
+    scanf("%d", &vertices);
+
+    if (vertices <= 0 || vertices > V) {
+        printf("Invalid number of vertices. Exiting...\n");
+        return 1;
+    }
+
+    // Initialize the adjacency matrix with INF
+    for (int i = 0; i < vertices; i++) {
+        for (int j = 0; j < vertices; j++) {
+            G[i][j] = INF;
+        }
+    }
+
+    // Input the number of edges
+    printf("Input the number of edges: ");
+    scanf("%d", &edges);
+
+    if (edges < 0 || edges > vertices * (vertices - 1)) {
+        printf("Invalid number of edges. Exiting...\n");
+        return 1;
+    }
+
+    // Input edges and construct the adjacency matrix
+    for (int i = 0; i < edges; i++) {
+        int start, end, weight;
+        printf("Input edge %d (start end weight): ", i + 1);
+        scanf("%d %d %d", &start, &end, &weight);
+
+        // Validate input vertices
+        if (start < 0 || start >= vertices || end < 0 || end >= vertices) {
+            printf("Invalid vertices. Try again.\n");
+            i--;
+            continue;
+        }
+
+        G[start][end] = weight;
+        G[end][start] = weight; // For undirected graph
+    }
+
+    // Perform Prim's algorithm
+    printf("Edge : Weight\n");
+
+    selected[0] = true;
+
+    while (no_edge < vertices - 1) {
+        int min = INF;
+        int x, y;
+
+        for (int i = 0; i < vertices; i++) {
+            if (selected[i]) {
+                for (int j = 0; j < vertices; j++) {
+                    if (!selected[j] && G[i][j]) {
+                        if (min > G[i][j]) {
+                            min = G[i][j];
+                            x = i;
+                            y = j;
+                        }
+                    }
+                }
+            }
+        }
+
+        printf("%d - %d : %d\n", x, y, min);
+        selected[y] = true;
+        no_edge++;
+    }
+
+    return 0;
+}
