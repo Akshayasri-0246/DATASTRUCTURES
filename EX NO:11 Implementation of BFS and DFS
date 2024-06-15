@@ -1,0 +1,224 @@
+//  implementation of BFS
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure for a node in the graph
+typedef struct Node {
+    int vertex;
+    struct Node* next;
+} Node;
+
+// Structure for the graph
+typedef struct Graph {
+    int numVertices;
+    Node** adjLists;
+    int* visited;
+} Graph;
+
+// Function to create a new node
+Node* createNode(int v) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->vertex = v;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to create a new graph
+Graph* createGraph(int vertices) {
+    Graph* graph = (Graph*)malloc(sizeof(Graph));
+    graph->numVertices = vertices;
+    graph->adjLists = (Node**)malloc(vertices * sizeof(Node*));
+    graph->visited = (int*)malloc(vertices * sizeof(int));
+    int i;
+    for (i = 0; i < vertices; i++) {
+        graph->adjLists[i] = NULL;
+        graph->visited[i] = 0;
+    }
+    return graph;
+}
+
+// Function to add an edge to the graph
+void addEdge(Graph* graph, int src, int dest) {
+    Node* newNode = createNode(dest);
+    newNode->next = graph->adjLists[src];
+    graph->adjLists[src] = newNode;
+    newNode = createNode(src);
+    newNode->next = graph->adjLists[dest];
+    graph->adjLists[dest] = newNode;
+}
+
+// Function to perform BFS traversal
+void bfs(Graph* graph, int startVertex) {
+    Node* queue = NULL;
+    graph->visited[startVertex] = 1;
+    enqueue(&queue, startVertex);
+    while (!isEmpty(queue)) {
+        printQueue(queue);
+        int currentVertex = dequeue(&queue);
+        printf("Visited %d\n", currentVertex);
+        Node* temp = graph->adjLists[currentVertex];
+        while (temp) {
+            int adjVertex = temp->vertex;
+            if (graph->visited[adjVertex] == 0) {
+                graph->visited[adjVertex] = 1;
+                enqueue(&queue, adjVertex);
+            }
+            temp = temp->next;
+        }
+    }
+}
+
+// Function to check if the queue is empty
+int isEmpty(Node* queue) {
+    return queue == NULL;
+}
+
+// Function to enqueue a node
+void enqueue(Node** queue, int value) {
+    Node* newNode = createNode(value);
+    if (isEmpty(*queue)) {
+        *queue = newNode;
+    } else {
+        Node* temp = *queue;
+        while (temp->next) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+    }
+}
+
+// Function to dequeue a node
+int dequeue(Node** queue) {
+    int nodeData = (*queue)->vertex;
+    Node* temp = *queue;
+    *queue = (*queue)->next;
+    free(temp);
+    return nodeData;
+}
+
+// Function to print the queue
+void printQueue(Node* queue) {
+    while (queue) {
+        printf("%d ", queue->vertex);
+        queue = queue->next;
+    }
+    printf("\n");
+}
+
+int main() {
+    int vertices, startVertex;
+    printf("Enter the number of vertices: ");
+    scanf("%d", &vertices);
+    Graph* graph = createGraph(vertices);
+    printf("Enter graph data in adjacency list form:\n");
+    for (int i = 0; i < vertices; i++) {
+        printf("Enter edges for vertex %d: ", i);
+        Node* temp = graph->adjLists[i];
+        while (temp) {
+            int adjVertex = temp->vertex;
+            printf("%d ", adjVertex);
+            temp = temp->next;
+        }
+        printf("\n");
+    }
+    printf("Enter the starting vertex: ");
+    scanf("%d", &startVertex);
+    bfs(graph, startVertex);
+    return 0;
+}
+
+
+
+//implementation of DFS
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure for a node in the graph
+typedef struct Node {
+    int vertex;
+    struct Node* next;
+} Node;
+
+// Structure for the graph
+typedef struct Graph {
+    int totalVertices;
+    int* visited;
+    Node** adjLists;
+} Graph;
+
+// Function to create a new node
+Node* createNode(int v) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->vertex = v;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to create a new graph
+Graph* createGraph(int vertices) {
+    Graph* graph = (Graph*)malloc(sizeof(Graph));
+    graph->totalVertices = vertices;
+    graph->visited = (int*)malloc(vertices * sizeof(int));
+    graph->adjLists = (Node**)malloc(vertices * sizeof(Node*));
+    int i;
+    for (i = 0; i < vertices; i++) {
+        graph->adjLists[i] = NULL;
+        graph->visited[i] = 0;
+    }
+    return graph;
+}
+
+// Function to add an edge to the graph
+void addEdge(Graph* graph, int src, int dest) {
+    Node* newNode = createNode(dest);
+    newNode->next = graph->adjLists[src];
+    graph->adjLists[src] = newNode;
+    newNode = createNode(src);
+    newNode->next = graph->adjLists[dest];
+    graph->adjLists[dest] = newNode;
+}
+
+// Function to perform DFS traversal
+void DFS(Graph* graph, int vertex) {
+    Node* adjList = graph->adjLists[vertex];
+    Node* temp = adjList;
+    graph->visited[vertex] = 1;
+    printf("%d -> ", vertex);
+    while (temp != NULL) {
+        int connectedVertex = temp->vertex;
+        if (graph->visited[connectedVertex] == 0) {
+            DFS(graph, connectedVertex);
+        }
+        temp = temp->next;
+    }
+}
+
+// Function to print the DFS traversal
+void printDFS(Graph* graph) {
+    int i;
+    for (i = 0; i < graph->totalVertices; i++) {
+        if (graph->visited[i] == 0) {
+            DFS(graph, i);
+            printf("\n");
+        }
+    }
+}
+
+int main() {
+    int vertices, edges;
+    printf("Enter the number of vertices: ");
+    scanf("%d", &vertices);
+    printf("Enter the number of edges: ");
+    scanf("%d", &edges);
+    Graph* graph = createGraph(vertices);
+    printf("Enter the edges in the form (source, destination): ");
+    for (int i = 0; i < edges; i++) {
+        int src, dest;
+        scanf("%d %d", &src, &dest);
+        addEdge(graph, src, dest);
+    }
+    printDFS(graph);
+    return 0;
+}
