@@ -1,0 +1,206 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure for AVL tree nodes
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+    int height;
+} Node;
+
+// Function to calculate the height of a node
+int height(Node* node) {
+    if (node == NULL)
+        return 0;
+    return node->height;
+}
+
+// Function to get the maximum of two integers
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+// Function to create a new node
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (!newNode) {
+        printf("Memory error\n");
+        return NULL;
+    }
+    newNode->data = data;
+    newNode->left = newNode->right = NULL;
+    newNode->height = 1;
+    return newNode;
+}
+
+// Function to perform left rotation
+Node* leftRotate(Node* y) {
+    Node* x = y->right;
+    Node* T2 = x->left;
+
+    x->left = y;
+    y->right = T2;
+
+    y->height = max(height(y->left), height(y->right)) + 1;
+    x->height = max(height(x->left), height(x->right)) + 1;
+
+    return x;
+}
+
+// Function to perform right rotation
+Node* rightRotate(Node* x) {
+    Node* y = x->left;
+    Node* T2 = y->right;
+
+    y->right = x;
+    x->left = T2;
+
+    x->height = max(height(x->left), height(x->right)) + 1;
+    y->height = max(height(y->left), height(y->right)) + 1;
+
+    return y;
+}
+
+// Function to get the balance factor of a node
+int getBalance(Node* node) {
+    if (node == NULL)
+        return 0;
+    return height(node->left) - height(node->right);
+}
+
+// Function to insert a new node into the AVL tree
+Node* insertNode(Node* node, int data) {
+    if (node == NULL)
+        return createNode(data);
+
+    if (data < node->data)
+        node->left = insertNode(node->left, data);
+    else if (data > node->data)
+        node->right = insertNode(node->right, data);
+    else
+        return node;
+
+    node->height = max(height(node->left), height(node->right)) + 1;
+
+    int balance = getBalance(node);
+
+    if (balance > 1 && data < node->left->data)
+        return rightRotate(node);
+    if (balance < -1 && data > node->right->data)
+        return leftRotate(node);
+    if (balance > 1 && data > node->left->data) {
+        node->left = leftRotate(node->left);
+        return rightRotate(node);
+    }
+    if (balance < -1 && data < node->right->data) {
+        node->right = rightRotate(node->right);
+        return leftRotate(node);
+    }
+
+    return node;
+}
+
+// Function to delete a node from the AVL tree
+Node* deleteNode(Node* node, int data) {
+    if (node == NULL)
+        return node;
+
+    if (data < node->data)
+        node->left = deleteNode(node->left, data);
+    else if (data > node->data)
+        node->right = deleteNode(node->right, data);
+    else {
+        if (node->left == NULL || node->right == NULL) {
+            Node* temp = node->left ? node->left : node->right;
+            if (temp == NULL) {
+                temp = node;
+                node = NULL;
+            } else {
+                *node = *temp;
+            }
+            free(temp);
+        } else {
+            Node* temp = node->right;
+            while (temp->left != NULL)
+                temp = temp->left;
+            node->data = temp->data;
+            node->right = deleteNode(node->right, temp->data);
+        }
+    }
+
+    if (node == NULL)
+        return node;
+
+    node->height = max(height(node->left), height(node->right)) + 1;
+
+    int balance = getBalance(node);
+
+    if (balance > 1 && getBalance(node->left) >= 0)
+        return rightRotate(node);
+    if (balance > 1 && getBalance(node->left) < 0) {
+        node->left = leftRotate(node->left);
+        return rightRotate(node);
+    }
+    if (balance < -1 && getBalance(node->right) <= 0)
+        return leftRotate(node);
+    if (balance < -1 && getBalance(node->right) > 0) {
+        node->right = rightRotate(node->right);
+        return leftRotate(node);
+    }
+
+    return node;
+}
+
+// Function to perform in-order traversal
+void inOrderTraversal(Node* node) {
+    if (node == NULL)
+        return;
+
+    inOrderTraversal(node->left);
+    printf("%d ", node->data);
+    inOrderTraversal(node->right);
+}
+
+int main() {
+    Node* root = NULL;
+
+    int choice, data;
+
+    while (1) {
+        printf("\n\n------- AVL TREE --------\n");
+        printf("\n1. Insert");
+        printf("\n2. Delete");
+        printf("\n3. Search");
+        printf("\n4. Inorder");
+        printf("\n5. Preorder");
+        printf("\n6. Postorder");
+        printf("\n7. EXIT");
+        printf("\n\nEnter Your Choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter data: ");
+                scanf("%d", &data);
+                root = insertNode(root, data);
+                break;
+            case 2:
+                printf("Enter data: ");
+                scanf("%d", &data);
+                root = deleteNode(root, data);
+                break;
+            case 4:
+                printf("Inorder traversal: ");
+                inOrderTraversal(root);
+                printf("\n");
+                break;
+            case 7:
+                return 0;
+            default:
+                printf("Invalid choice. Please choose again.\n");
+        }
+    }
+
+    return 0;
+}
