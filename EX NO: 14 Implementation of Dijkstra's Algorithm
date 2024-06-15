@@ -1,0 +1,116 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define INF 99999
+#define V 100
+
+// Function to find the vertex with the minimum distance value
+int minDistance(int dist[], bool sptSet[]) {
+    int min = INF, min_index;
+
+    for (int v = 0; v < V; v++) {
+        if (!sptSet[v] && dist[v] <= min) {
+            min = dist[v];
+            min_index = v;
+        }
+    }
+
+    return min_index;
+}
+
+// Function to print the constructed distance array
+void printSolution(int dist[]) {
+    printf("Vertex \t\t Distance from Source\n");
+    for (int i = 0; i < V; i++) {
+        printf("%d \t\t %d\n", i, dist[i]);
+    }
+}
+
+// Dijkstra's algorithm for adjacency matrix representation of the graph
+void dijkstra(int graph[V][V], int src) {
+    int dist[V]; // The output array. dist\[i] will hold the shortest distance from src to i
+    bool sptSet[V]; // sptSet\[i] will be true if vertex i is included in shortest path tree
+
+    // Initialize all distances as INFINITE and sptSet[] as false
+    for (int i = 0; i < V; i++) {
+        dist[i] = INF, sptSet[i] = false;
+    }
+
+    dist[src] = 0;
+
+    // Find shortest path for all vertices
+    for (int count = 0; count < V - 1; count++) {
+        int u = minDistance(dist, sptSet);
+
+        sptSet[u] = true;
+
+        for (int v = 0; v < V; v++) {
+            if (!sptSet[v] && graph[u][v] && dist[u] != INF && dist[u] + graph[u][v] < dist[v]) {
+                dist[v] = dist[u] + graph[u][v];
+            }
+        }
+    }
+
+    printSolution(dist);
+}
+
+int main() {
+    int vertices, edges;
+
+    // Input the number of vertices
+    printf("Input the number of vertices: ");
+    scanf("%d", &vertices);
+
+    if (vertices <= 0 || vertices > V) {
+        printf("Invalid number of vertices. Exiting...\n");
+        return 1;
+    }
+
+    // Initialize the adjacency matrix with INF
+    int graph[V][V];
+    for (int i = 0; i < vertices; i++) {
+        for (int j = 0; j < vertices; j++) {
+            graph[i][j] = INF;
+        }
+    }
+
+    // Input the number of edges
+    printf("Input the number of edges: ");
+    scanf("%d", &edges);
+
+    if (edges < 0 || edges > vertices * (vertices - 1)) {
+        printf("Invalid number of edges. Exiting...\n");
+        return 1;
+    }
+
+    // Input edges and construct the adjacency matrix
+    for (int i = 0; i < edges; i++) {
+        int start, end, weight;
+        printf("Input edge %d (start end weight): ", i + 1);
+        scanf("%d %d %d", &start, &end, &weight);
+
+        // Validate input vertices
+        if (start < 0 || start >= vertices || end < 0 || end >= vertices) {
+            printf("Invalid vertices. Try again.\n");
+            i--;
+            continue;
+        }
+
+        graph[start][end] = weight;
+        graph[end][start] = weight; // For undirected graph
+    }
+
+    // Input the source vertex
+    int src;
+    printf("Input the source vertex: ");
+    scanf("%d", &src);
+
+    if (src < 0 || src >= vertices) {
+        printf("Invalid source vertex. Exiting...\n");
+        return 1;
+    }
+
+    dijkstra(graph, src);
+
+    return 0;
+}
